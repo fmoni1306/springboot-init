@@ -1,0 +1,35 @@
+version: '3.7'
+services:
+  spring:
+    # 해당경로 Dockerfile 실행
+    build: .
+    image: spring-init:latest
+    container_name: spring-init
+    ports:
+      - '8081:8081'
+  mariadb:
+    # m1이 아닌경우 주석 해제 없어도 구동은 가능
+    platform: linux/arm64
+    restart: always
+    container_name: mariadb
+    # 지원 종료 되는 날짜가 있기 때문에 가장 최신버전으로
+    image: mariadb:latest
+    ports:
+      - '3306:3306'
+    volumes:
+      - ~/Desktop/docker-volume/mariadb/mysql:/var/lib/mysql
+    environment:
+      - TZ=Asia/Seoul
+      # 이설정은 초기 생성시에만 변경이 적용됨 ( 마운트된 폴더가 있는경우 수정해도 변경되지 않음)
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=spring-init
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    healthcheck:
+      # 종료코드 0 -> 정상 멍령어 , 1 -> 일반적인 에러
+      # grep 에 실패하면 exit -> unhealthy
+      test: [ 'CMD-SHELL', 'mysqladmin ping -h 127.0.0.1 -u root --password=root | grep "mysqld1 is alive" || exit 1' ]
+      interval: 10s
+      timeout: 2s
+      retries: 10
