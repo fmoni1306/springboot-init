@@ -1,6 +1,5 @@
 package com.example.springbootinit.dto;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
