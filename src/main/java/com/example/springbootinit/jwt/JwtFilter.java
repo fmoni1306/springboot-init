@@ -11,6 +11,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 // OncePerRequestFilter는 Http 요청당 한 번만 실행되도록 보장하는 필터
 @Slf4j
@@ -20,8 +22,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final TokenProvider tokenProvider;
 
-    public JwtFilter(TokenProvider tokenProvider) {
+    public final List<String> WHITELIST;
+
+    public JwtFilter(TokenProvider tokenProvider, String[] whiteList) {
         this.tokenProvider = tokenProvider;
+        this.WHITELIST = Arrays.asList(whiteList);
     }
 
     /**
@@ -37,25 +42,28 @@ public class JwtFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = resolveToken(request);
-        String requestURI = request.getRequestURI();
-
-        if (StringUtils.hasText(jwt) && tokenProvider.validToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("Security Context에 '{}' 인증 정보를 저장 했습니다, uri: {}", authentication.getName(), requestURI);
+        if (this.WHITELIST.stream().anyMatch(s -> s.equals(request.getRequestURI()))) {
+            log.info("토큰 인증 제외 URL uri -> {}", request.getRequestURI());
+            filterChain.doFilter(request, response);
         } else {
-            log.error("유효한 JWT가 없습니다, uri: {}", requestURI);
-        }
+            String jwt = resolveToken(request);
+            String requestURI = request.getRequestURI();
 
-        filterChain.doFilter(request, response);
+            if (StringUtils.hasText(jwt) && tokenProvider.validToken(jwt)) {
+                Authentication authentication = tokenProvider.getAuthentication(jwt);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("Security Context에 '{}' 인증 정보를 저장 했습니다, uri: {}", authentication.getName(), requestURI);
+            } else {
+                log.error("유효한 JWT가 없습니다, uri: {}", requestURI);
+            }
+
+            filterChain.doFilter(request, response);
+        }
     }
 
     /**
      * Request Header에서 토큰 정보를 꺼내오기 위한 역할
-     *
-     * @param request
      */
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);

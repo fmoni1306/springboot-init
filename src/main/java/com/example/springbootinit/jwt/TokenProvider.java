@@ -1,8 +1,6 @@
 package com.example.springbootinit.jwt;
 
 
-import com.example.springbootinit.domain.Authority;
-import com.example.springbootinit.domain.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,6 +90,8 @@ public class TokenProvider implements InitializingBean {
      */
     public boolean validToken(String token) {
         try {
+            log.info("jwt 토큰 유효성 검사");
+            // parseClaimsJws 메소드에 토큰을 넣으면 아래 선택한 예외들이 throw 처리되어 있음
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {

@@ -5,13 +5,11 @@ jwt:
   token-validity-in-seconds: 86400
 
 spring:
+  jpa:
+    # ??? ???? ??? ??? ??( view or transaction )
+    open-in-view: false
   profiles:
     active: local
-#  devtools:
-#    livereload:
-#      enabled: true
-#    restart:
-#      enabled: true
 
 logging:
   level:
@@ -39,7 +37,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MariaDB103Dialect
+        dialect: org.hibernate.dialect.MariaDBDialect
 
 ---
 spring:

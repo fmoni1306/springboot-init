@@ -37,6 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private User createMember(String name, Member member) {
+        // 예시로 넣은 부분
         if (member.getIsActivated() == false) {
             throw new RuntimeException(name + "-> 활성화되어 있지 않습니다.");
         }
