@@ -28,15 +28,18 @@ public class TokenProvider implements InitializingBean {
     private static final String AUTHORITIES_KEY = "auth";
 
     private final String secret;
-    private final long tokenValidityInSeconds;
+    private final long accessTokenValidTime;
+    private final long refreshTokenValidTime;
 
     private Key key;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.token-validity-in-seconds}") long tokenValidityInSeconds) {
+            @Value("${jwt.accessTokenValidTime}") long accessTokenValidTime,
+            @Value("${jwt.refreshTokenValidTime}") long refreshTokenValidTime) {
         this.secret = secret;
-        this.tokenValidityInSeconds = tokenValidityInSeconds * 100;
+        this.accessTokenValidTime = accessTokenValidTime * 100;
+        this.refreshTokenValidTime = refreshTokenValidTime * 100;
     }
 
     @Override
@@ -50,24 +53,23 @@ public class TokenProvider implements InitializingBean {
      *
      * @return jwt secret, key 를 사용해서 생성한 jwt 토큰
      */
-    public String createToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication) {
         String authority = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining());
 
         long now = new Date().getTime();
 
-        Date validity = new Date(now + this.tokenValidityInSeconds);
+        Date accessTokenExpiredDate = new Date(now + this.accessTokenValidTime);
 
-        return Jwts.builder()
+        return  Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authority)
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setExpiration(accessTokenExpiredDate)
                 .compact();
     }
 
     /**
      * 토큰으로 클레임을 만들고 이를 이용해 유저 객체를 만들어서 Authentication 객체 리턴
-     *
      * @param token Jwt
      */
     public Authentication getAuthentication(String token) {

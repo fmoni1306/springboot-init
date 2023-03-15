@@ -2,7 +2,8 @@ jwt:
   header: Authorization
   # echo spring-boot-init-security-jwt-token-secret-key-hs512-64bytes-need | base64
   secret: c3ByaW5nLWJvb3QtaW5pdC1zZWN1cml0eS1qd3QtdG9rZW4tc2VjcmV0LWtleS1oczUxMi02NGJ5dGVzLW5lZWQK
-  token-validity-in-seconds: 86400
+  accessTokenValidTime: 1800
+  refreshTokenValidTime: 864000
 
 spring:
   jpa:
