@@ -40,7 +40,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public static final String[] WHITELIST = {"/favicon.ico", "/error", "/", "/login"};
+    public static final String[] WHITELIST = {"/favicon.ico", "/error", "/", "/login", "/member"};
 
     public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler) {
         this.tokenProvider = tokenProvider;
