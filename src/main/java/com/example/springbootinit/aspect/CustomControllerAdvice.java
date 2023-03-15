@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CustomControllerAdvice {
 
     @ExceptionHandler(Exception.class)
-    public String AuthenticationExceptionReturnResponseEntity(Exception e) {
+    public String viewControllerException(Exception e) {
         ErrorResponse response = ErrorResponse.builder()
                 .message(e.getMessage())
                 .status(HttpStatus.UNAUTHORIZED.value())
