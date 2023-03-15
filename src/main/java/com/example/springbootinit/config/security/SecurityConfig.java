@@ -1,6 +1,5 @@
 package com.example.springbootinit.config.security;
 
-import com.example.springbootinit.filter.CustomFilter;
 import com.example.springbootinit.jwt.JwtAccessDeniedHandler;
 import com.example.springbootinit.jwt.JwtAuthenticationEntryPoint;
 import com.example.springbootinit.jwt.JwtFilter;
@@ -32,7 +31,7 @@ spring security 5.7.x 에서는 WebSecurityConfigurerAdapter 상속 받지 않�
 인증(Authentication): 사용자가 시스템에 정보(ex jwt토큰, 유저 정보)를 제공하며, 시스템은 사용자에 대한 정보를 검증, 시스텡을 사용할 수 있는 지에 대한 확인 하는 과정
 인가(Authorization): 보호된 자원(메서드 접근 혹은 요청에 대한 자원(ex 정적파일))에 대해서 접근을 허가 하거나 거부하는 기능
  */
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = false) // debug를 통해 security filter 확인 가능
 @EnableMethodSecurity // preauthorize 어노테이션 사용하기위해
 @Configuration
 @Slf4j
@@ -41,7 +40,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public static final String[] WHITELIST = {"/favicon.ico", "/error", "/", "/login", "/member"};
+    public static final String[] WHITELIST = {"/favicon.ico", "/error", "/", "/login"};
 
     public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler) {
         this.tokenProvider = tokenProvider;
@@ -94,10 +93,12 @@ public class SecurityConfig {
                 .requestMatchers(WHITELIST).permitAll()
                 .anyRequest().authenticated();
 
-        // custom 필터 추가
-        // custom filter 를 component 로 등록 시 전역적으로 filter에 등록 됨
-        // 전역으로 사용할거면 bean으로 등록 security에서 사용할거면 addfilter
-        http.addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class);
+        /*
+         * custom 필터 추가
+         * custom filter 를 component 로 등록 시 전역적으로 filter에 등록 됨
+         * 전역으로 사용할거면 bean으로 등록 security에서 사용할거면 addfilter
+         */
+//        http.addFilterBefore(new CustomFilter(), UsernamePasswordAuthenticationFilter.class);
 
         // JwtFilter를 Security 로직 필터에 등록
         http.addFilterBefore(new JwtFilter(tokenProvider, WHITELIST), UsernamePasswordAuthenticationFilter.class);
