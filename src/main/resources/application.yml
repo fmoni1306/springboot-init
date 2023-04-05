@@ -7,7 +7,7 @@ jwt:
 
 spring:
   jpa:
-    # ??? ???? ??? ??? ??( view or transaction )
+    # opiv 레벨 성능 관련 설정 ( view or transaction )
     open-in-view: false
   profiles:
     active: local
@@ -34,7 +34,7 @@ spring:
       platform: mariadb
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true

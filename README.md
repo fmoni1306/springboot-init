@@ -10,7 +10,7 @@
 
 
 * run test
-```  java -Dspring.profiles.active=local -Durl=jdbc:mariadb://host.docker.internal:3306/spring-init1 -jar build/libs/*.jar ```
+```  java -Dspring.profiles.active=local -Durl=jdbc:mariadb://host.docker.internal:3306/spring-init -jar build/libs/*.jar ```
 
 
 * docker build test
